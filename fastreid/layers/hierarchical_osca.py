@@ -5,7 +5,6 @@ from .coord_att import CoordAtt
 
 
 class LightweightOSBlock_CA(nn.Module):
-    """轻量版 OS-CA，用于 Layer3，减少计算量"""
     def __init__(self, in_channels, out_channels, reduction=16):
         super(LightweightOSBlock_CA, self).__init__()
         mid_channels = out_channels // 4
@@ -17,7 +16,7 @@ class LightweightOSBlock_CA(nn.Module):
             nn.ReLU(inplace=True)
         )
         
-        # Branch 2: 3x3 conv (只用一个3x3，减少计算)
+        # Branch 2: 3x3 conv 
         self.conv33 = nn.Sequential(
             nn.Conv2d(in_channels, mid_channels, 3, padding=1, bias=False),
             nn.BatchNorm2d(mid_channels),
@@ -31,7 +30,7 @@ class LightweightOSBlock_CA(nn.Module):
             nn.ReLU(inplace=True)
         )
 
-        # Branch 4: AvgPool + 1x1 (比MaxPool更轻量)
+        # Branch 4: AvgPool + 1x1 
         self.avgpool = nn.Sequential(
             nn.AvgPool2d(3, stride=1, padding=1),
             nn.Conv2d(in_channels, mid_channels, 1, bias=False),
@@ -68,25 +67,24 @@ class LightweightOSBlock_CA(nn.Module):
 
 
 class HierarchicalOSCA(nn.Module):
-    """跨层 OS-CA 融合模块：融合 Layer3 和 Layer4 的多尺度特征"""
     def __init__(self, layer3_channels=1024, layer4_channels=2048, reduction=16):
         super(HierarchicalOSCA, self).__init__()
         
-        # Layer3 的轻量 OS-CA
+        # Layer3
         self.osca_layer3 = LightweightOSBlock_CA(layer3_channels, layer3_channels, reduction)
         
-        # Layer4 的完整 OS-CA
+        # Layer4 
         from .os_ca_block import OSBlock_CA
         self.osca_layer4 = OSBlock_CA(layer4_channels, layer4_channels, reduction)
         
-        # Layer3 特征下采样到 Layer4 尺寸 (H/16 -> H/32)后的融合层
+        
         self.fusion_conv = nn.Sequential(
             nn.Conv2d(layer3_channels + layer4_channels, layer4_channels, kernel_size=1, bias=False),
             nn.BatchNorm2d(layer4_channels),
             nn.ReLU(inplace=True)
         )
         
-        # 自适应权重生成
+       
         self.fusion_gate = nn.Sequential(
             nn.AdaptiveAvgPool2d(1),
             nn.Conv2d(layer3_channels + layer4_channels, 2, 1),
@@ -104,25 +102,25 @@ class HierarchicalOSCA(nn.Module):
         feat_l3 = features_dict['layer3']  # [B, 1024, H/16, W/16]
         feat_l4_raw = features_dict['layer4']  # [B, 2048, H/32, W/32]
         
-        # 各自通过 OS-CA
+        
         feat_l3 = self.osca_layer3(feat_l3)  # [B, 1024, H/16, W/16]
         feat_l4 = self.osca_layer4(feat_l4_raw)  # [B, 2048, H/32, W/32]
         
-        # Layer3 下采样到 Layer4 尺寸 (H/16 -> H/32)
+        
         feat_l3_down = F.adaptive_avg_pool2d(feat_l3, feat_l4.shape[2:])  # [B, 1024, H/32, W/32]
         
-        # 拼接
+        
         combined = torch.cat([feat_l3_down, feat_l4], dim=1)  # [B, 3072, H/32, W/32]
         
-        # 生成自适应融合权重
+      
         weights = self.fusion_gate(combined)  # [B, 2, 1, 1]
-        w_l3, w_l4 = weights[:, 0:1], weights[:, 1:2]  # 各自权重
+        w_l3, w_l4 = weights[:, 0:1], weights[:, 1:2] 
         
-        # 加权融合 (加权拼接后的特征)
+        
         feat_l3_weighted = feat_l3_down * w_l3
         feat_l4_weighted = feat_l4 * w_l4
         
-        # 最终融合 + 残差连接 (保持 Layer4 原始特征的判别力)
+        
         fused = self.fusion_conv(torch.cat([feat_l3_weighted, feat_l4_weighted], dim=1))
         
         return F.relu(fused + feat_l4_raw)
