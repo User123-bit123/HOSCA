@@ -138,7 +138,7 @@ MODEL:
   - 57.375
   QUEUE_SIZE: 8192
   WEIGHTS: ''
-OUTPUT_DIR: logs/Market1501/bagtricks_R50_IBN_HOSCA_GeM
+OUTPUT_DIR: logs/Market1501/bagtricks_R50_IBN_HOSCA_GeM_v8_map_opt
 SOLVER:
   AMP:
     ENABLED: true
