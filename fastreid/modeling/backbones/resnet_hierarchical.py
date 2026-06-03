@@ -1,9 +1,4 @@
 # encoding: utf-8
-"""
-@author:  liaoxingyu
-@contact: sherlockliao01@gmail.com
-Modified to support multi-scale hierarchical features (Layer3 + Layer4).
-"""
 
 import logging
 import math
