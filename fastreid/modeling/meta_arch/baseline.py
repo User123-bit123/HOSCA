@@ -1,15 +1,5 @@
 # encoding: utf-8
-"""
-Minimal Baseline meta-architecture for the HOSCA release pack.
 
-This version only keeps the code path required by the final
-`bagtricks_R50_IBN_HOSCA_GeM_v8_map_opt` experiment:
-
-- hierarchical backbone feature extraction
-- HierarchicalOSCA attention/fusion
-- embedding head forward
-- CrossEntropyLoss + TripletLoss
-"""
 
 import torch
 from torch import nn
