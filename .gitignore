@@ -1,0 +1,11 @@
+# Large model files
+*.pth
+*.pt
+*.ckpt
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+events.out.tfevents*

@@ -1,0 +1,24 @@
+# HOSCA
+
+This folder contains the core implementation and reproducibility files for the final
+`bagtricks_R50_IBN_HOSCA_GeM` experiment.
+
+## Included
+
+- HOSCA-related source files
+- Market1501 training config
+- Resolved config
+
+## Core Files
+
+- `fastreid/modeling/meta_arch/baseline.py`
+- `fastreid/layers/hierarchical_osca.py`
+- `fastreid/layers/os_ca_block.py`
+- `fastreid/layers/coord_att.py`
+- `fastreid/modeling/backbones/resnet_hierarchical.py`
+
+## Notes
+
+- This pack is a lightweight release of the HOSCA-specific modifications on top of FastReID.
+- The final checkpoint is not included by default.
+- Please keep upstream FastReID license and attribution when publishing.
