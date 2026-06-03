@@ -2,12 +2,13 @@
 """
 Minimal Baseline meta-architecture for the HOSCA release pack.
 
-This trimmed version keeps only the code path required by the final
+This version only keeps the code path required by the final
 `bagtricks_R50_IBN_HOSCA_GeM_v8_map_opt` experiment:
 
 - hierarchical backbone feature extraction
 - HierarchicalOSCA attention/fusion
-- classification + triplet supervision
+- embedding head forward
+- CrossEntropyLoss + TripletLoss
 """
 
 import torch
@@ -16,11 +17,7 @@ from torch import nn
 from fastreid.config import configurable
 from fastreid.modeling.backbones import build_backbone
 from fastreid.modeling.heads import build_heads
-from fastreid.modeling.losses import (
-    cross_entropy_loss,
-    log_accuracy,
-    triplet_loss,
-)
+from fastreid.modeling.losses import cross_entropy_loss, log_accuracy, triplet_loss
 from fastreid.layers.hierarchical_osca import HierarchicalOSCA
 from .build import META_ARCH_REGISTRY
 
@@ -29,9 +26,6 @@ from .build import META_ARCH_REGISTRY
 class Baseline(nn.Module):
     """
     Minimal Baseline architecture for the HOSCA release.
-
-    The release pack only preserves the reproduction path used in the paper:
-    backbone -> HierarchicalOSCA -> embedding head -> CE + Triplet losses.
     """
 
     @configurable
@@ -107,7 +101,7 @@ class Baseline(nn.Module):
             assert "targets" in batched_inputs, "Person ID annotation are missing in training!"
             targets = batched_inputs["targets"]
 
-            # PreciseBN compatibility: avoid invalid class indices in borrowed routines.
+            # Keep compatibility with borrowed FastReID training utilities.
             if targets.sum() < 0:
                 targets.zero_()
 
@@ -134,7 +128,7 @@ class Baseline(nn.Module):
 
     def losses(self, outputs, gt_labels):
         """
-        Compute the loss used in the final HOSCA experiment.
+        Compute the losses used in the final HOSCA experiment.
         """
         pred_class_logits = outputs["pred_class_logits"].detach()
         cls_outputs = outputs["cls_outputs"]
