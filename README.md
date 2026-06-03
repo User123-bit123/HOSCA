@@ -6,7 +6,7 @@ This folder contains the core implementation and reproducibility files for the f
 ## Included
 
 - HOSCA-related source files
-- Market1501 training config
+- training config
 - Resolved config
 
 ## Core Files
