@@ -16,3 +16,4 @@ This folder contains the core implementation and reproducibility files for the f
 - `fastreid/layers/os_ca_block.py`
 - `fastreid/layers/coord_att.py`
 - `fastreid/modeling/backbones/resnet_hierarchical.py`
+- `tools/train_net.py`
