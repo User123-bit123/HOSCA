@@ -1,9 +1,5 @@
 # HOSCA
 
-Core release files for **HOSCA: Hierarchical Omniscale Collaborative Attention for Person Re-Identification**.
-
-This is a compact FastReID patch package. It keeps only the code needed by the paper's HOSCA path: OS-CA intra-layer attention, Stage-3/Stage-4 gated residual fusion, the hierarchical ResNet-50-IBN backbone, the minimal baseline forward/loss path, and the Market1501 reproduction config.
-
 ## What Is Included
 
 - `hoscareid/layers/coord_att.py`: coordinate attention used by OS-CA.
@@ -14,7 +10,7 @@ This is a compact FastReID patch package. It keeps only the code needed by the p
 - `configs/Market1501/bagtricks_R50_IBN_HOSCA_GeM.yml`: Market1501 training config.
 - `configs/MSMT17/bagtricks_R50_IBN_HOSCA_GeM.yml`: MSMT17 training config.
 - `tools/train_net.py`: FastReID training/evaluation entrypoint.
-- `reproducibility/hosca_config/README.md`: compact reproduction notes.
+- `reproducibility/hosca_config/README.md`: reproduction notes.
 
 ## Paper-Code Mapping
 
