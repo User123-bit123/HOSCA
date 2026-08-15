@@ -51,4 +51,4 @@ TEST:
   RERANK:
     ENABLED: False
 
-OUTPUT_DIR: "logs/Market1501/bagtricks_R50_IBN_HOSCA_GeM_v8_map_opt"
+OUTPUT_DIR: "logs/Market1501/bagtricks_R50_IBN_HOSCA_GeM"
