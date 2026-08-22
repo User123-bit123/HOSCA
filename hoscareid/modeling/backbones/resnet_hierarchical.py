@@ -221,7 +221,9 @@ class ResNetHierarchical(nn.Module):
                 x = self.NL_4[NL4_counter](x)
                 NL4_counter += 1
 
-        feat_layer4 = x  # [B, 2048, H/32, W/32]
+        # With LAST_STRIDE=1, used by the final HOSCA+PCL configuration,
+        # Stage 4 has the same H/16 x W/16 spatial resolution as Stage 3.
+        feat_layer4 = x
 
         if return_hierarchical:
             return {'layer3': feat_layer3, 'layer4': feat_layer4}
