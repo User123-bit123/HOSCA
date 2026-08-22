@@ -88,12 +88,15 @@ class HierarchicalOSCA(nn.Module):
             nn.Sigmoid()
         )
 
-    def forward(self, features_dict):
+    def forward(self, features_dict, return_aux=False):
         """
         Args:
-            features_dict: dict with 'layer3' [B, 1024, H/16, W/16] and 'layer4' [B, 2048, H/32, W/32]
+            features_dict: dict with 'layer3' and 'layer4' feature maps.
+            return_aux: if True, also return the aligned Stage-3 feature and
+                the fused feature for the PCL branch.
         Returns:
-            fused_features: [B, 2048, H/32, W/32]
+            fused_features, or a dictionary containing the fused feature and
+            the intermediate features when return_aux is True.
         """
         feat_l3 = features_dict['layer3']
         feat_l4_raw = features_dict['layer4']
@@ -111,4 +114,14 @@ class HierarchicalOSCA(nn.Module):
         feat_l4_weighted = feat_l4 * w_l4
         fused = self.fusion_conv(torch.cat([feat_l3_weighted, feat_l4_weighted], dim=1))
 
-        return F.relu(fused + feat_l4_raw)
+        fused = F.relu(fused + feat_l4_raw)
+        if not return_aux:
+            return fused
+
+        return {
+            "fused": fused,
+            "layer3": feat_l3_down,
+            "layer4": feat_l4,
+            "layer4_raw": feat_l4_raw,
+            "gate": weights,
+        }
